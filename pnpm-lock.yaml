@@ -14,6 +14,9 @@ importers:
       '@threlte/extras':
         specifier: ^9.21.0
         version: 9.21.0(@types/three@0.185.0)(svelte@5.56.4(@typescript-eslint/types@8.62.1))(three@0.185.1)
+      bottleneck:
+        specifier: ^2.19.5
+        version: 2.19.5
       three:
         specifier: ^0.185.1
         version: 0.185.1
@@ -1350,6 +1353,9 @@ packages:
 
   bignumber.js@9.3.1:
     resolution: {integrity: sha512-Ko0uX15oIUS7wJ3Rb30Fs6SkVbLmPBAKdlm7q9+ak9bbIeFf0MwuBsQV6z7+X768/cHsfg+WlysDWJcmthjsjQ==}
+
+  bottleneck@2.19.5:
+    resolution: {integrity: sha512-VHiNCbI1lKdl44tGrhNfU3lup0Tj/ZBMJB5/2ZbNXRCPuRCO7ed2mgcK4r17y+KB2EfuYuRaVlwNbAeaWGSpbw==}
 
   brace-expansion@5.0.7:
     resolution: {integrity: sha512-7oFy703dxfY3/NLxC1fh2SUCQ0H9rmAY+5EpDVfXjUTTs+HEwR2nYaqLv+GWcTsumwxPfiz6CzCNkwXwBUwqCA==}
@@ -4201,6 +4207,8 @@ snapshots:
       require-from-string: 2.0.2
 
   bignumber.js@9.3.1: {}
+
+  bottleneck@2.19.5: {}
 
   brace-expansion@5.0.7:
     dependencies:
