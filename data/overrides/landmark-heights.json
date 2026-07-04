@@ -1,0 +1,27 @@
+[
+	{ "match": "lulu", "height": 42, "note": "Lulu Mall + Marriott block, Edappally" },
+	{ "match": "grand hyatt|bolgatty", "height": 60, "note": "Grand Hyatt Bolgatty" },
+	{ "match": "marriott", "height": 50, "note": "Kochi Marriott, Edappally" },
+	{ "match": "crowne plaza", "height": 45, "note": "Crowne Plaza, Kundannoor" },
+	{ "match": "le meridien", "height": 40, "note": "Le Méridien, Maradu" },
+	{ "match": "taj gateway|gateway hotel", "height": 35, "note": "Taj Gateway, Marine Drive" },
+	{ "match": "abad plaza", "height": 30, "note": "Abad Plaza, MG Road" },
+	{
+		"match": "kerala trade centre|trade centre",
+		"height": 45,
+		"note": "Kerala Trade Centre, Marine Drive"
+	},
+	{ "match": "penta menaka|menaka", "height": 35, "note": "Penta Menaka, Marine Drive" },
+	{ "match": "gcda|shopping complex marine", "height": 30, "note": "GCDA complex, Marine Drive" },
+	{ "match": "high court", "height": 30, "note": "Kerala High Court" },
+	{ "match": "lisie", "height": 35, "note": "Lisie Hospital, Kaloor" },
+	{ "match": "lakeshore", "height": 35, "note": "Lakeshore Hospital, Maradu" },
+	{ "match": "medical trust", "height": 40, "note": "Medical Trust Hospital, MG Road" },
+	{ "match": "lourdes", "height": 30, "note": "Lourdes Hospital, Pachalam" },
+	{ "match": "ernakulam general hospital", "height": 25, "note": "General Hospital" },
+	{ "match": "centre square", "height": 40, "note": "Centre Square Mall, MG Road" },
+	{ "match": "oberon", "height": 35, "note": "Oberon Mall, Edappally bypass" },
+	{ "match": "jln|jawaharlal nehru.*stadium", "height": 30, "note": "JLN Stadium, Kaloor" },
+	{ "match": "revenue tower", "height": 35, "note": "Revenue Tower, Park Avenue" },
+	{ "match": "chavara", "height": 30, "note": "Chavara Cultural Centre area towers" }
+]

@@ -93,7 +93,11 @@ export function readCacheBinary(name: string): Buffer | undefined {
 	return readFileSync(p);
 }
 
-const OVERPASS_URL = 'https://overpass-api.de/api/interpreter';
+const OVERPASS_MIRRORS = [
+	'https://overpass-api.de/api/interpreter',
+	'https://overpass.kumi.systems/api/interpreter',
+	'https://overpass.private.coffee/api/interpreter'
+];
 
 export async function overpass(query: string, cacheName: string): Promise<OverpassResponse> {
 	const cached = readCache<OverpassResponse>(cacheName);
@@ -101,19 +105,29 @@ export async function overpass(query: string, cacheName: string): Promise<Overpa
 		console.log(`[overpass] using cached ${cacheName}`);
 		return cached;
 	}
-	console.log(`[overpass] fetching ${cacheName} …`);
-	const res = await fetch(OVERPASS_URL, {
-		method: 'POST',
-		headers: {
-			'User-Agent': 'ernakulam-live-recon/0.1 (github.com pending; one-shot build-time pull)',
-			'Content-Type': 'application/x-www-form-urlencoded'
-		},
-		body: new URLSearchParams({ data: query }).toString()
-	});
-	if (!res.ok) throw new Error(`Overpass ${res.status}: ${await res.text()}`);
-	const json = (await res.json()) as OverpassResponse;
-	writeCache(cacheName, json);
-	return json;
+	let lastError: unknown;
+	for (const url of OVERPASS_MIRRORS) {
+		console.log(`[overpass] fetching ${cacheName} from ${new URL(url).host} …`);
+		try {
+			const res = await fetch(url, {
+				method: 'POST',
+				headers: {
+					'User-Agent': 'ernakulam-live-recon/0.1 (github.com pending; one-shot build-time pull)',
+					'Content-Type': 'application/x-www-form-urlencoded'
+				},
+				body: new URLSearchParams({ data: query }).toString(),
+				signal: AbortSignal.timeout(300_000)
+			});
+			if (!res.ok) throw new Error(`Overpass ${res.status}: ${(await res.text()).slice(0, 300)}`);
+			const json = (await res.json()) as OverpassResponse;
+			writeCache(cacheName, json);
+			return json;
+		} catch (e) {
+			lastError = e;
+			console.warn(`[overpass] ${new URL(url).host} failed: ${e}`);
+		}
+	}
+	throw lastError;
 }
 
 /** bbox in Overpass order: south,west,north,east */

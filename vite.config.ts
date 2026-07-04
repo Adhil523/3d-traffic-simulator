@@ -15,7 +15,9 @@ export default defineConfig({
 
 			// adapter-node: the app needs a persistent server process (75 s refresh
 			// scheduler, SSE fan-out, budget ledger) — serverless/edge is ruled out.
-			adapter: adapter()
+			// precompress emits .br/.gz for static assets (incl. static/data
+			// geometry) at build; sirv serves them with content-encoding
+			adapter: adapter({ precompress: true })
 		})
 	],
 	test: {
