@@ -12,6 +12,7 @@ import { brotliCompressSync } from 'node:zlib';
 import { buildBuildings } from './build-buildings.ts';
 import { buildMetro } from './build-metro.ts';
 import { buildRoads } from './build-roads.ts';
+import { buildWater } from './build-water.ts';
 
 const OUT = 'static/data';
 mkdirSync(OUT, { recursive: true });
@@ -43,6 +44,11 @@ console.log('building metro …');
 const metro = await buildMetro();
 emit('metro.json', JSON.stringify(metro));
 console.log(`  ${metro.lines.length} viaduct ways, ${metro.stations.length} stations`);
+
+console.log('building water …');
+const water = await buildWater();
+emit('water.json', JSON.stringify(water));
+console.log(`  ${water.indices.length / 3} triangles`);
 
 const kb = (n: number) => (n / 1024).toFixed(0).padStart(7) + ' KB';
 console.log('\nasset                raw        brotli');

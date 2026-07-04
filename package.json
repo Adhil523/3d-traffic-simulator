@@ -29,6 +29,7 @@
 		"@turf/turf": "^7.3.5",
 		"@types/earcut": "^3.0.0",
 		"@types/node": "^24",
+		"@types/three": "^0.185.0",
 		"earcut": "^3.2.3",
 		"eslint": "^10.4.1",
 		"eslint-config-prettier": "^10.1.8",
@@ -48,6 +49,9 @@
 		"vitest": "^4.1.9"
 	},
 	"dependencies": {
+		"@threlte/core": "^8.5.16",
+		"@threlte/extras": "^9.21.0",
+		"three": "^0.185.1",
 		"zod": "^4.4.3"
 	}
 }
