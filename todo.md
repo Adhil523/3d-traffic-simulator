@@ -10,4 +10,4 @@ Running list of things that block or were deliberately deferred. Remove items as
 
 - [ ] **ZenStack + SQLite persistence** — deferred per instruction; the budget ledger and snapshot store use a JSON-file store under `data/` instead (`src/lib/server/storage.ts`). Swap to ZenStack/Prisma later; the interfaces are written so only the storage module changes.
 - [ ] **TomTom-side recon results** (flow-segment speeds table, tile decode inspection, incident dump, map-matching score against real flow tiles) — scripts exist and run once a key is present; `docs/phase0-findings.md` marks these sections pending.
-- [ ] **Device performance measurement** (60 fps desktop / ≥30 fps mid-range phone) — needs real hardware; only build-time payload checks are automated.
+- [ ] **Device performance measurement** (60 fps desktop / ≥30 fps mid-range phone) — needs real hardware. Automated proxy so far: production build renders at **60 fps in headless Chromium on software rendering** (SwiftShader), initial payload 1.27 MB brotli, load→settled ≈ 5.6 s headless. Real-GPU desktop and a mid-range phone still need a manual check.

@@ -24,7 +24,11 @@ const outputs: { name: string; raw: number; br: number }[] = [];
 function emit(name: string, data: string | Buffer): void {
 	const buf = typeof data === 'string' ? Buffer.from(data) : data;
 	writeFileSync(`${OUT}/${name}`, buf);
-	outputs.push({ name, raw: buf.length, br: brotliCompressSync(buf).length });
+	const br = brotliCompressSync(buf);
+	// adapter-node's precompress only covers text extensions; emitting our own
+	// .br makes sirv serve every asset (notably buildings.bin) compressed
+	writeFileSync(`${OUT}/${name}.br`, br);
+	outputs.push({ name, raw: buf.length, br: br.length });
 }
 
 console.log('building road graph …');
