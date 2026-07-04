@@ -1,6 +1,12 @@
 <script lang="ts">
+	import { live } from '../lib/live/live.svelte.ts';
 	import { CAMERA_PRESETS, flyTo } from '../lib/scene/camera.svelte.ts';
 	import Scene from '$lib/scene/Scene.svelte';
+
+	$effect(() => {
+		live.start();
+		return () => live.stop();
+	});
 </script>
 
 <svelte:head>
@@ -18,7 +24,16 @@
 		<h1 class="text-lg font-semibold tracking-tight text-white/90 drop-shadow-sm">
 			Ernakulam Live
 		</h1>
-		<p class="text-xs text-white/60">3D traffic · live color arrives in Phase 2</p>
+		{#if live.snapshot && !live.delayed}
+			<p class="text-xs font-medium text-emerald-300">
+				<span class="mr-1 inline-block size-1.5 rounded-full bg-emerald-400"></span>
+				LIVE — updated {live.secondsSinceUpdate}s ago
+			</p>
+		{:else if live.snapshot}
+			<p class="text-xs font-medium text-amber-300">data delayed</p>
+		{:else}
+			<p class="text-xs text-white/60">waiting for live data…</p>
+		{/if}
 	</header>
 
 	<!-- camera presets -->
