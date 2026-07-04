@@ -4,9 +4,10 @@ Companion to `ernakulam-traffic-action-plan.md` (phases, acceptance criteria) an
 
 ---
 
-## Phase 0 — Setup + data reconnaissance *(no rendering)*
+## Phase 0 — Setup + data reconnaissance _(no rendering)_
 
 ### 0a. Repository scaffold
+
 - [ ] `pnpm create svelte` — SvelteKit 2, Svelte 5, TypeScript strict, ESLint, Prettier, Vitest, Playwright
 - [ ] Add adapter-node, Tailwind v4, `tsx`; set up `scripts/`, `src/lib/server/`, `data/overrides/`, `static/data/` layout
 - [ ] zod-validated `env.server.ts`; `.env.example` with all vars from tech-stack §11
@@ -14,6 +15,7 @@ Companion to `ernakulam-traffic-action-plan.md` (phases, acceptance criteria) an
 - [ ] Obtain TomTom API key; **verify current free-tier limits on the developer portal** (pricing changed July 2026) and record them in `.env` defaults
 
 ### 0b. Recon scripts (`scripts/recon/`)
+
 - [ ] Overpass pull: drivable roads (motorway→tertiary + links) for the bbox; count segments, list one-way tags on the 5 priority corridors
 - [ ] Overpass pull: building footprints; count, measure % with height data
 - [ ] TomTom Flow Segment Data at ~10 known points on priority corridors during evening peak (17:30–20:00 IST); table of current vs free-flow speed + confidence
@@ -22,11 +24,13 @@ Companion to `ernakulam-traffic-action-plan.md` (phases, acceptance criteria) an
 - [ ] **Map-matching spike:** prototype (i) nearest-segment + heading matching of flow-tile geometry → OSM segments, and (ii) the fallback (render TomTom geometry for color, OSM for vehicles). Score match rate on the NH-66 bypass and MG Road
 
 ### 0c. Phase gate
+
 - [ ] Write `docs/phase0-findings.md`: segment counts, per-corridor TomTom coverage quality, one-way tagging problems found, **go/no-go decision on map-matching approach** (action plan §4)
 
 ## Phase 1 — Static 3D city
 
 ### 1a. Data pipeline (`scripts/pipeline/`)
+
 - [ ] Local ENU projection module + unit tests (round-trip accuracy across the bbox)
 - [ ] Roads: OSM → projected polylines with class, name, one-way, junction nodes, legal-turn adjacency → compact serialized road graph
 - [ ] Buildings: footprints → heights (OSM tag, else type/area heuristic) → triangulated extrusions merged per district
@@ -34,6 +38,7 @@ Companion to `ernakulam-traffic-action-plan.md` (phases, acceptance criteria) an
 - [ ] Emit brotli-precompressed assets to `static/data/`; assert initial payload ≤ ~5 MB
 
 ### 1b. Scene (Threlte)
+
 - [ ] Scene shell: renderer, tilted camera (pitch clamp 55–65°), MapControls-style input, ground + dark backwater planes
 - [ ] Buildings mesh (muted near-monochrome palette), road ribbons (uncolored), metro viaduct ribbon + station markers
 - [ ] Day/night lighting driven by IST; dusk transition
@@ -41,33 +46,39 @@ Companion to `ernakulam-traffic-action-plan.md` (phases, acceptance criteria) an
 - [ ] Perf pass: merged geometries, district frustum culling; measure on mid-range laptop + phone
 
 ### 1c. Phase gate
+
 - [ ] A local can orient in seconds; **60 fps desktop / ≥30 fps mid-range phone**
 
-## Phase 2 — Live color *(proxy + rate limiter live here)*
+## Phase 2 — Live color _(proxy + rate limiter live here)_
 
 ### 2a. TomTom client + rate limiter (`src/lib/server/tomtom/`)
+
 - [ ] Typed TomTom client with zod-validated responses
 - [ ] **QPS limiter:** `bottleneck` at ~4 req/s wrapping every TomTom call
-- [ ] **Budget ledger:** ZenStack init (SQLite); `ApiBudget` model keyed by IST day; `spend(class, n)` as the *only* gateway to TomTom
+- [ ] **Budget ledger:** ZenStack init (SQLite); `ApiBudget` model keyed by IST day; `spend(class, n)` as the _only_ gateway to TomTom
 - [ ] **Soft limit (60%, pro-rated):** stretch refresh interval toward 90 s; **hard limit (80%):** stop fetching, serve last snapshot, flag "data delayed"
 - [ ] 429/5xx exponential backoff with jitter; unit tests: day rollover in IST, soft/hard trip points, restart persistence
 
 ### 2b. Scheduler + snapshot store
+
 - [ ] Single-flight 75 s cycle in `hooks.server.ts`: fetch flow tiles + incidents → decode → map-match → snapshot
 - [ ] Map-matching per the Phase 0 decision; low-confidence/no-data segments flagged neutral (never fake green)
 - [ ] `FlowSnapshot`/`IncidentSnapshot` persistence (warm restart, 48 h retention); snapshot delta encoding, per-refresh payload ≤ 200 KB
 - [ ] `GET /api/snapshot` + SSE `/api/live`; client store with staleness clock ("data delayed" after 3 min of failures)
 
 ### 2c. Rendering
+
 - [ ] Per-vertex road coloring by congestion ratio (green ≥80% / yellow / orange / red <25%; closed = dark gray dashed; no-data = neutral gray)
 - [ ] ~2 s color tween on refresh — no snapping, no geometry rebuild
 
 ### 2d. Phase gate
+
 - [ ] Evening peak shows NH-66/Vyttila red-orange vs green/gray side streets; colors evolve over an hour unattended; **a full day stays inside the TomTom allowance** (read the ledger to prove it)
 
 ## Phase 3 — Vehicles
 
 ### 3a. Simulation worker
+
 - [ ] Worker skeleton: 10–15 Hz tick, road graph + live snapshot in, transferable `Float32Array` out; main-thread interpolation into `InstancedMesh`
 - [ ] Movement: segment speed × jitter (0.85–1.15) → real geographic speed; keep-left lane offset; one-way compliance
 - [ ] Density targets: free flow ≈ 1/120–150 m → congested ≈ 1/15–25 m; stop-and-go pulsing on red segments
@@ -77,10 +88,12 @@ Companion to `ernakulam-traffic-action-plan.md` (phases, acceptance criteria) an
 - [ ] Unit test: worst-case city-wide red stays within budget and reads as jammed (action plan §9)
 
 ### 3b. Rollout
+
 - [ ] Priority corridors first → validate keep-left + one-ways on MG Road → full network
 - [ ] Junction handling: simple geometry, fade-through at Vyttila if clipping is ugly
 
 ### 3c. Phase gate
+
 - [ ] Red = dense crawling stop-and-go beside green = sparse fast; refresh changes behavior without popping; Phase 1 frame rates hold at full budget
 
 ## Phase 4 — Incidents + HUD

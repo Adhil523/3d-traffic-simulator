@@ -18,6 +18,11 @@ Thumbs.db
 !.env.example
 !.env.test
 
+# Runtime + recon data (committed data lives in data/overrides and static/data)
+/data/*
+!/data/overrides
+/scripts/recon/cache
+
 # Vite
 vite.config.js.timestamp-*
 vite.config.ts.timestamp-*

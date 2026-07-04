@@ -1,6 +1,6 @@
 # Ernakulam Live — 3D Traffic Visualization: Project Action Plan
 
-**Document purpose:** This is the project definition and build plan. It describes *what* to build, in what order, and how to judge that each stage is done. The technology stack is specified in a separate companion document — where this plan says "the map engine" or "the data proxy," consult that document for the concrete tools. Do not make stack decisions from this document alone.
+**Document purpose:** This is the project definition and build plan. It describes _what_ to build, in what order, and how to judge that each stage is done. The technology stack is specified in a separate companion document — where this plan says "the map engine" or "the data proxy," consult that document for the concrete tools. Do not make stack decisions from this document alone.
 
 **Intended reader:** A Claude instance (or human developer) starting this project from an empty repository.
 
@@ -11,7 +11,7 @@
 A browser-based, live, tilted-perspective 3D scene of Ernakulam (Kochi), Kerala, in which:
 
 - The real road network is rendered over an extruded 3D cityscape and colored continuously by **actual, current traffic speeds** pulled from TomTom's live traffic data.
-- **Animated vehicles move along the roads**, with their speed, density, and stop-and-go behavior driven by that same live data — so a jam on Vyttila junction at 6 PM is visible both as red roads *and* as a crawling, dense stream of vehicles.
+- **Animated vehicles move along the roads**, with their speed, density, and stop-and-go behavior driven by that same live data — so a jam on Vyttila junction at 6 PM is visible both as red roads _and_ as a crawling, dense stream of vehicles.
 - Live traffic incidents (accidents, closures, roadworks) appear as markers in the scene.
 - The whole scene refreshes itself every 60–90 seconds without user action, so leaving it open on a screen shows the city's traffic "breathing" through the day.
 
@@ -21,17 +21,17 @@ The intended feel is a living diorama — somewhere between a flight-radar displ
 
 This must be understood before writing any code, because it shapes every design decision:
 
-**TomTom does not provide individual vehicle positions.** No public API does. TomTom provides *aggregate* per-road-segment data: current average speed, free-flow speed, travel time, and a confidence value, updated roughly every minute.
+**TomTom does not provide individual vehicle positions.** No public API does. TomTom provides _aggregate_ per-road-segment data: current average speed, free-flow speed, travel time, and a confidence value, updated roughly every minute.
 
-Therefore the moving vehicles in this project are **synthesized**: procedurally spawned agents that travel along real road geometry, whose behavior is *parameterized* by the live data. Concretely:
+Therefore the moving vehicles in this project are **synthesized**: procedurally spawned agents that travel along real road geometry, whose behavior is _parameterized_ by the live data. Concretely:
 
 - **Vehicle speed** on a segment = the live current speed TomTom reports for that segment (with small per-vehicle random variation so traffic doesn't look robotic).
 - **Vehicle density** on a segment = derived from the congestion ratio (current speed ÷ free-flow speed). A segment at 20% of free-flow speed gets many slow vehicles bunched together; a free-flowing segment gets sparse, fast vehicles.
-- **Vehicle count is impressionistic, not literal.** The goal is that the scene *reads truthfully* — dense and slow where it is actually dense and slow — not that vehicle #4132 corresponds to a real car.
+- **Vehicle count is impressionistic, not literal.** The goal is that the scene _reads truthfully_ — dense and slow where it is actually dense and slow — not that vehicle #4132 corresponds to a real car.
 
 This is an honest and standard technique (flight/marine trackers interpolate similarly), but the project's UI must include a small "how this works" note so viewers are not misled into thinking they are watching real tracked vehicles.
 
-**Non-goal:** This is not a traffic *simulation*. Vehicles do not make routing decisions, do not queue behind each other with car-following physics, and do not obey modeled signal timings. They are data-driven animation. (A true simulation is listed as a far-future stretch goal in §10.)
+**Non-goal:** This is not a traffic _simulation_. Vehicles do not make routing decisions, do not queue behind each other with car-following physics, and do not obey modeled signal timings. They are data-driven animation. (A true simulation is listed as a far-future stretch goal in §10.)
 
 ## 3. Geographic scope
 
@@ -64,7 +64,7 @@ Four inputs, each with a defined role. (Endpoints, formats, and libraries per th
 
 **D. Building footprints** — from OpenStreetMap, extruded to 3D. Where OSM has height data, use it; otherwise assign plausible heights by building type/area, with a curated override list for skyline landmarks so the city is recognizable (e.g., the high-rises along Marine Drive, Lulu Mall at Edappally, hospitals and hotels along MG Road, metro stations and the elevated metro viaduct itself).
 
-**Map-matching decision (must be made in Phase 2):** TomTom's flow data and OSM's road geometry do not share IDs. The plan's default approach: render roads from OSM geometry and assign each OSM segment a live speed by spatial matching against TomTom flow data (nearest-segment matching with heading agreement). If matching proves too fiddly, the fallback is to render TomTom's own flow geometry directly for the *color* layer while running vehicles on OSM geometry with speeds sampled from the flow layer beneath them. Prototype both cheaply before committing.
+**Map-matching decision (must be made in Phase 2):** TomTom's flow data and OSM's road geometry do not share IDs. The plan's default approach: render roads from OSM geometry and assign each OSM segment a live speed by spatial matching against TomTom flow data (nearest-segment matching with heading agreement). If matching proves too fiddly, the fallback is to render TomTom's own flow geometry directly for the _color_ layer while running vehicles on OSM geometry with speeds sampled from the flow layer beneath them. Prototype both cheaply before committing.
 
 ## 5. The scene — what the viewer sees
 
@@ -94,19 +94,19 @@ Four inputs, each with a defined role. (Endpoints, formats, and libraries per th
 
 Work strictly in this order; each phase must meet its acceptance criteria before the next begins. Each phase produces something demoable.
 
-**Phase 0 — Data reconnaissance (no rendering).** Scripted exploration: pull OSM roads/buildings for the bounding box; hit TomTom flow for ~10 known points on the priority corridors and the flow tiles for the area; pull current incidents. *Accept when:* a written summary exists documenting segment counts, TomTom coverage quality per corridor (including a screenshot-or-table of current vs free-flow speeds at a known busy hour), any one-way tagging problems found on priority corridors, and a go/no-go note on the map-matching approach of §4.
+**Phase 0 — Data reconnaissance (no rendering).** Scripted exploration: pull OSM roads/buildings for the bounding box; hit TomTom flow for ~10 known points on the priority corridors and the flow tiles for the area; pull current incidents. _Accept when:_ a written summary exists documenting segment counts, TomTom coverage quality per corridor (including a screenshot-or-table of current vs free-flow speeds at a known busy hour), any one-way tagging problems found on priority corridors, and a go/no-go note on the map-matching approach of §4.
 
-**Phase 1 — Static 3D city.** Render the tilted scene: extruded buildings, water, road network (uncolored), metro viaduct, day/night lighting, camera presets. *Accept when:* a local resident could orient themselves within seconds ("that's Vyttila, that's Marine Drive"), and the scene holds 60 fps on a mid-range laptop and ≥ 30 fps on a mid-range phone.
+**Phase 1 — Static 3D city.** Render the tilted scene: extruded buildings, water, road network (uncolored), metro viaduct, day/night lighting, camera presets. _Accept when:_ a local resident could orient themselves within seconds ("that's Vyttila, that's Marine Drive"), and the scene holds 60 fps on a mid-range laptop and ≥ 30 fps on a mid-range phone.
 
-**Phase 2 — Live color.** Proxy in place with caching and budget guard; flow data joined to road geometry; roads colored by congestion ratio; auto-refresh with tweened color transitions; staleness handling. *Accept when:* opening the app during evening peak (≈ 17:30–20:00 IST) shows the NH-66 bypass and Vyttila visibly red/orange while side streets stay green/gray, colors change over an hour of observation without any user action, and a full day of running stays within the TomTom free allowance.
+**Phase 2 — Live color.** Proxy in place with caching and budget guard; flow data joined to road geometry; roads colored by congestion ratio; auto-refresh with tweened color transitions; staleness handling. _Accept when:_ opening the app during evening peak (≈ 17:30–20:00 IST) shows the NH-66 bypass and Vyttila visibly red/orange while side streets stay green/gray, colors change over an hour of observation without any user action, and a full day of running stays within the TomTom free allowance.
 
-**Phase 3 — Vehicles.** The synthesized-vehicle system of §5 on the priority corridors first, then the full network. *Accept when:* vehicles keep left and obey one-ways on MG Road; a red segment visibly shows dense, crawling, stop-and-go traffic next to a green segment with sparse fast traffic; a data refresh changes vehicle behavior without popping/teleporting; and frame-rate targets from Phase 1 still hold at full vehicle budget.
+**Phase 3 — Vehicles.** The synthesized-vehicle system of §5 on the priority corridors first, then the full network. _Accept when:_ vehicles keep left and obey one-ways on MG Road; a red segment visibly shows dense, crawling, stop-and-go traffic next to a green segment with sparse fast traffic; a data refresh changes vehicle behavior without popping/teleporting; and frame-rate targets from Phase 1 still hold at full vehicle budget.
 
-**Phase 4 — Incidents + HUD.** Incident markers with popups, closure handling, legend, stats strip, live indicator, pause control, disclosure note. *Accept when:* a real current incident from TomTom appears correctly placed and described in the scene, and a closure grays its segment and halts spawns onto it.
+**Phase 4 — Incidents + HUD.** Incident markers with popups, closure handling, legend, stats strip, live indicator, pause control, disclosure note. _Accept when:_ a real current incident from TomTom appears correctly placed and described in the scene, and a closure grays its segment and halts spawns onto it.
 
-**Phase 5 — Polish and resilience.** Night mode glow, vehicle variants (auto-rickshaw, bus), performance passes (LOD: cull/fade vehicles and building detail at distance), mobile touch controls, loading states, error states, an "about" page. *Accept when:* the app survives an overnight unattended run without memory growth or data drift, and a cold load reaches an interactive scene in under 5 seconds on a typical connection.
+**Phase 5 — Polish and resilience.** Night mode glow, vehicle variants (auto-rickshaw, bus), performance passes (LOD: cull/fade vehicles and building detail at distance), mobile touch controls, loading states, error states, an "about" page. _Accept when:_ the app survives an overnight unattended run without memory growth or data drift, and a cold load reaches an interactive scene in under 5 seconds on a typical connection.
 
-**Phase 6 — Ship.** Deploy publicly with the proxy's caching in front of TomTom; add basic anonymous analytics (viewer count only); write the README with attribution (TomTom data, OSM © contributors — attribution is a license requirement for both). *Accept when:* a stranger's phone, on a link, shows live Ernakulam traffic in under 10 seconds.
+**Phase 6 — Ship.** Deploy publicly with the proxy's caching in front of TomTom; add basic anonymous analytics (viewer count only); write the README with attribution (TomTom data, OSM © contributors — attribution is a license requirement for both). _Accept when:_ a stranger's phone, on a link, shows live Ernakulam traffic in under 10 seconds.
 
 ## 8. Performance and budget targets
 

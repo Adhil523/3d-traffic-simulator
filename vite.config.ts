@@ -1,7 +1,7 @@
 import tailwindcss from '@tailwindcss/vite';
-import adapter from '@sveltejs/adapter-auto';
+import adapter from '@sveltejs/adapter-node';
 import { sveltekit } from '@sveltejs/kit/vite';
-import { defineConfig } from 'vite';
+import { defineConfig } from 'vitest/config';
 
 export default defineConfig({
 	plugins: [
@@ -13,10 +13,14 @@ export default defineConfig({
 					filename.split(/[/\\]/).includes('node_modules') ? undefined : true
 			},
 
-			// adapter-auto only supports some environments, see https://svelte.dev/docs/kit/adapter-auto for a list.
-			// If your environment is not supported, or you settled on a specific environment, switch out the adapter.
-			// See https://svelte.dev/docs/kit/adapters for more information about adapters.
+			// adapter-node: the app needs a persistent server process (75 s refresh
+			// scheduler, SSE fan-out, budget ledger) — serverless/edge is ruled out.
 			adapter: adapter()
 		})
-	]
+	],
+	test: {
+		include: ['src/**/*.{test,spec}.ts', 'scripts/**/*.{test,spec}.ts'],
+		environment: 'node',
+		passWithNoTests: true
+	}
 });
