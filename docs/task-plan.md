@@ -8,42 +8,42 @@ Companion to `ernakulam-traffic-action-plan.md` (phases, acceptance criteria) an
 
 ### 0a. Repository scaffold
 
-- [ ] `pnpm create svelte` — SvelteKit 2, Svelte 5, TypeScript strict, ESLint, Prettier, Vitest, Playwright
-- [ ] Add adapter-node, Tailwind v4, `tsx`; set up `scripts/`, `src/lib/server/`, `data/overrides/`, `static/data/` layout
-- [ ] zod-validated `env.server.ts`; `.env.example` with all vars from tech-stack §11
-- [ ] GitHub Actions CI: lint + typecheck + unit tests
+- [x] `pnpm create svelte` — SvelteKit 2, Svelte 5, TypeScript strict, ESLint, Prettier, Vitest, Playwright
+- [x] Add adapter-node, Tailwind v4, `tsx`; set up `scripts/`, `src/lib/server/`, `data/overrides/`, `static/data/` layout
+- [x] zod-validated `env.server.ts`; `.env.example` with all vars from tech-stack §11
+- [x] GitHub Actions CI: lint + typecheck + unit tests
 - [ ] Obtain TomTom API key; **verify current free-tier limits on the developer portal** (pricing changed July 2026) and record them in `.env` defaults
 
 ### 0b. Recon scripts (`scripts/recon/`)
 
-- [ ] Overpass pull: drivable roads (motorway→tertiary + links) for the bbox; count segments, list one-way tags on the 5 priority corridors
-- [ ] Overpass pull: building footprints; count, measure % with height data
+- [x] Overpass pull: drivable roads (motorway→tertiary + links) for the bbox; count segments, list one-way tags on the 5 priority corridors
+- [x] Overpass pull: building footprints; count, measure % with height data
 - [ ] TomTom Flow Segment Data at ~10 known points on priority corridors during evening peak (17:30–20:00 IST); table of current vs free-flow speed + confidence
 - [ ] TomTom vector flow tiles for the bbox at z12/z13: confirm tile count per cycle, decode one with `@mapbox/vector-tile`, inspect geometry density on arterials vs inner streets
 - [ ] TomTom incidents bbox query: dump current incidents
-- [ ] **Map-matching spike:** prototype (i) nearest-segment + heading matching of flow-tile geometry → OSM segments, and (ii) the fallback (render TomTom geometry for color, OSM for vehicles). Score match rate on the NH-66 bypass and MG Road
+- [x] **Map-matching spike:** prototype (i) nearest-segment + heading matching of flow-tile geometry → OSM segments, and (ii) the fallback (render TomTom geometry for color, OSM for vehicles). Score match rate on the NH-66 bypass and MG Road
 
 ### 0c. Phase gate
 
-- [ ] Write `docs/phase0-findings.md`: segment counts, per-corridor TomTom coverage quality, one-way tagging problems found, **go/no-go decision on map-matching approach** (action plan §4)
+- [x] Write `docs/phase0-findings.md`: segment counts, per-corridor TomTom coverage quality, one-way tagging problems found, **go/no-go decision on map-matching approach** (action plan §4)
 
 ## Phase 1 — Static 3D city
 
 ### 1a. Data pipeline (`scripts/pipeline/`)
 
-- [ ] Local ENU projection module + unit tests (round-trip accuracy across the bbox)
-- [ ] Roads: OSM → projected polylines with class, name, one-way, junction nodes, legal-turn adjacency → compact serialized road graph
-- [ ] Buildings: footprints → heights (OSM tag, else type/area heuristic) → triangulated extrusions merged per district
-- [ ] Overrides overlay: landmark heights (Marine Drive high-rises, Lulu Mall, MG Road hotels/hospitals), metro viaduct + station geometry, one-way corrections from Phase 0 findings
-- [ ] Emit brotli-precompressed assets to `static/data/`; assert initial payload ≤ ~5 MB
+- [x] Local ENU projection module + unit tests (round-trip accuracy across the bbox)
+- [x] Roads: OSM → projected polylines with class, name, one-way, junction nodes, legal-turn adjacency → compact serialized road graph
+- [x] Buildings: footprints → heights (OSM tag, else type/area heuristic) → triangulated extrusions merged per district
+- [x] Overrides overlay: landmark heights (Marine Drive high-rises, Lulu Mall, MG Road hotels/hospitals), metro viaduct + station geometry, one-way corrections from Phase 0 findings
+- [x] Emit brotli-precompressed assets to `static/data/`; assert initial payload ≤ ~5 MB
 
 ### 1b. Scene (Threlte)
 
-- [ ] Scene shell: renderer, tilted camera (pitch clamp 55–65°), MapControls-style input, ground + dark backwater planes
-- [ ] Buildings mesh (muted near-monochrome palette), road ribbons (uncolored), metro viaduct ribbon + station markers
-- [ ] Day/night lighting driven by IST; dusk transition
-- [ ] Camera preset fly-to: Vyttila, Edappally, MG Road, Marine Drive
-- [ ] Perf pass: merged geometries, district frustum culling; measure on mid-range laptop + phone
+- [x] Scene shell: renderer, tilted camera (pitch clamp 55–65°), MapControls-style input, ground + dark backwater planes
+- [x] Buildings mesh (muted near-monochrome palette), road ribbons (uncolored), metro viaduct ribbon + station markers
+- [x] Day/night lighting driven by IST; dusk transition
+- [x] Camera preset fly-to: Vyttila, Edappally, MG Road, Marine Drive
+- [x] Perf pass: merged geometries, district frustum culling; measure on mid-range laptop + phone
 
 ### 1c. Phase gate
 
@@ -53,18 +53,18 @@ Companion to `ernakulam-traffic-action-plan.md` (phases, acceptance criteria) an
 
 ### 2a. TomTom client + rate limiter (`src/lib/server/tomtom/`)
 
-- [ ] Typed TomTom client with zod-validated responses
-- [ ] **QPS limiter:** `bottleneck` at ~4 req/s wrapping every TomTom call
-- [ ] **Budget ledger:** ZenStack init (SQLite); `ApiBudget` model keyed by IST day; `spend(class, n)` as the _only_ gateway to TomTom
-- [ ] **Soft limit (60%, pro-rated):** stretch refresh interval toward 90 s; **hard limit (80%):** stop fetching, serve last snapshot, flag "data delayed"
-- [ ] 429/5xx exponential backoff with jitter; unit tests: day rollover in IST, soft/hard trip points, restart persistence
+- [x] Typed TomTom client with zod-validated responses
+- [x] **QPS limiter:** `bottleneck` at ~4 req/s wrapping every TomTom call
+- [x] **Budget ledger:** ZenStack init (SQLite); `ApiBudget` model keyed by IST day; `spend(class, n)` as the _only_ gateway to TomTom
+- [x] **Soft limit (60%, pro-rated):** stretch refresh interval toward 90 s; **hard limit (80%):** stop fetching, serve last snapshot, flag "data delayed"
+- [x] 429/5xx exponential backoff with jitter; unit tests: day rollover in IST, soft/hard trip points, restart persistence
 
 ### 2b. Scheduler + snapshot store
 
-- [ ] Single-flight 75 s cycle in `hooks.server.ts`: fetch flow tiles + incidents → decode → map-match → snapshot
-- [ ] Map-matching per the Phase 0 decision; low-confidence/no-data segments flagged neutral (never fake green)
-- [ ] `FlowSnapshot`/`IncidentSnapshot` persistence (warm restart, 48 h retention); snapshot delta encoding, per-refresh payload ≤ 200 KB
-- [ ] `GET /api/snapshot` + SSE `/api/live`; client store with staleness clock ("data delayed" after 3 min of failures)
+- [x] Single-flight 75 s cycle in `hooks.server.ts`: fetch flow tiles + incidents → decode → map-match → snapshot
+- [x] Map-matching per the Phase 0 decision; low-confidence/no-data segments flagged neutral (never fake green)
+- [x] `FlowSnapshot`/`IncidentSnapshot` persistence (warm restart, 48 h retention); snapshot delta encoding, per-refresh payload ≤ 200 KB
+- [x] `GET /api/snapshot` + SSE `/api/live`; client store with staleness clock ("data delayed" after 3 min of failures)
 
 ### 2c. Rendering
 
